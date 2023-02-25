@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+      
+        body {
+          font-family: Arial, sans-serif;
+        }
+      
+        #calculator {
+          width: 350px;
+          margin: 0 auto;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          padding: 10px;
+        }
+      
+        #display {
+          height: 50px;
+		  width: 320px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          text-align: right;
+          padding: 5px;
+          font-size: 24px;
+		  align-self: center;
+        }
+      
+        button {
+          width: 50px;
+          height: 50px;
+          border: none;
+          background-color: #ddd;
+          border-radius: 5px;
+          margin: 5px;
+          font-size: 24px;
+          cursor: pointer;
+          outline: none;
+        }
+      
+        button.operator {
+          background-color: #f99;
+        }
+      
+        button#clear {
+          background-color: #f99;
+        }
+      
+        button#equals {
+          background-color: #99f;
+          color: #fff;
+        }
+      
+        button#decimal {
+          font-size: 32px;
+        }
+      
+        button:hover {
+          background-color: #bbb;
+        }
+      
+        button:active {
+          background-color: #999;
+        }
+      
+        button:focus {
+          box-shadow: 0 0 0 2px #fff, 0 0 0 4px #bbb;
+        }
+      </style>      
+
+</head>
+<body>
+	<h1>Calculator</h1>
+
+	<div id="calculator">
+		<input type="text" id="display" value="0" readonly/>
+		<button id="seven" onclick="addToInput('7')">7</button>
+		<button id="eight" onclick="addToInput('8')">8</button>
+		<button id="nine" onclick="addToInput('9')">9</button>
+		<button id="divide" onclick="addToInput('/')" class="operator">/</button>
+		<button id="multiply" onclick="addToInput('*')" class="operator">*</button>
+		<button id="four" onclick="addToInput('4')">4</button>
+		<button id="five" onclick="addToInput('5')">5</button>
+		<button id="six" onclick="addToInput('6')">6</button>
+		<button id="subtract" onclick="addToInput('-')" class="operator">-</button>
+		<button id="add" onclick="addToInput('+')" class="operator">+</button>
+		<button id="one" onclick="addToInput('1')">1</button>
+		<button id="two" onclick="addToInput('2')">2</button>
+		<button id="three" onclick="addToInput('3')">3</button>
+		<button id="clear" onclick="clearInput()" class="operator">C</button>
+		<button id="equals" onclick="calculate()" class="operator">=</button>
+		<button id="zero" onclick="addToInput('0')">0</button>
+		<button id="decimal" onclick="addToInput('.')">.</button>
+	</div>
+	<script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+	<script>
+	function getLastOperator(input) {
+		var operators = ["-", "+", "*", "/"];
+		var lastOperatorIndex = -1;
+		// Loop through each operator to find the most recent occurrence
+		for (var i = 0; i < operators.length; i++) {
+		var index = input.lastIndexOf(operators[i]);
+		if (index > lastOperatorIndex) {
+			lastOperatorIndex = index;
+		}
+		}
+		return lastOperatorIndex;
+	}
+
+	function simplifyOperators(input) {
+		const operators = ["-", "+", "*", "/"];
+		let result = input[0];
+		for (let i = 1; i < input.length; i++) {
+		if (operators.includes(input[i])) {
+			if (operators.includes(input[i+1])) {
+			if (input[i+1] === "-" && !operators.includes(input[i+2])) {
+				// leave the second to last operator in the substring if the last one is a negative sign
+				result += input[i];
+			} // do nothing if the last operator is not a negative sign
+			} else {
+				result += input[i];
+			}
+			} else {
+			result += input[i];
+			}
+		}
+		const output = result.replace(/--/g, "+");
+		console.log(output);
+		return output;
+	}
+
+
+	function addToInput(value) {
+		var input = document.getElementById("display").value;
+		// Check if there is an operator more recently entered than a decimal
+		var operatorIndex = getLastOperator(input);
+		var decimalIndex = input.lastIndexOf(".");
+		if (decimalIndex > operatorIndex) {
+			// If there is a decimal more recently entered than any operator, do not allow another decimal to be appended
+			if (value === ".") {
+			return;
+			}
+		}
+
+		if (input === "0" && value !== ".") {
+			// Remove initial zero from display when a number is pressed
+			document.getElementById("display").value = value;
+		} else {
+			document.getElementById("display").value += value;
+		}
+	}
+
+	function clearInput() {
+		    document.getElementById("display").value = "0";
+	}
+
+	function calculate() {
+		var input = document.getElementById("display").value;
+		
+		// Simplify consecutive operators
+		var cleanedString = simplifyOperators(input);
+		
+		// Evaluate the expression and update the display
+		var result = eval(cleanedString);
+		document.getElementById("display").value = result.toString();
+		}
+
+	</script>
+</body>
+</html>
